@@ -10,24 +10,29 @@ use derive_macro_test::Transformable;
 struct Drone {
     #[transform]
     transform: Transform,
-    tasks: Vec<()>
+    tasks: Vec<()>,
 }
 
 #[derive(Transformable, Debug)]
 struct Metal {
     #[transform]
-    transform: Transform
+    transform: Transform,
 }
 
 #[test]
 fn test() {
     let mut entities: Vec<Box<dyn Entity>> = vec![];
 
-    let drone = Drone { transform: Transform(0.0, 0.0), tasks: vec![] };
+    let drone = Drone {
+        transform: Transform(0.0, 0.0),
+        tasks: vec![],
+    };
     println!("transform: {:#?}", drone.transform());
 
     entities.push(Box::new(drone));
-    entities.push(Box::new(Metal { transform: Transform(1.0, 0.0) }));
+    entities.push(Box::new(Metal {
+        transform: Transform(1.0, 0.0),
+    }));
 
     println!("entities: {:#?}", entities);
 }

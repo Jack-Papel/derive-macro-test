@@ -10,5 +10,4 @@ pub trait Transformable {
 
 pub trait Entity: Transformable + Debug {}
 
-impl<T> Entity for T
-where T: Transformable + Debug {}
+impl<T> Entity for T where T: Transformable + Debug {}

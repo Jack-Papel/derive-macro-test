@@ -4,7 +4,7 @@ extern crate syn;
 extern crate quote;
 
 use proc_macro::TokenStream;
-use syn::{Attribute, parse_macro_input, DeriveInput, Data};
+use syn::{parse_macro_input, Attribute, Data, DeriveInput};
 
 #[proc_macro_derive(Transformable, attributes(transform))]
 pub fn transformable(input: TokenStream) -> TokenStream {
@@ -15,14 +15,22 @@ pub fn transformable(input: TokenStream) -> TokenStream {
     let name = input.ident;
     let transform_name = match &mut input.data {
         Data::Struct(ref mut struct_body) => {
-            let field = struct_body.fields.iter_mut().find(|field| get_transform_field(&field.attrs).is_some())
+            let field = struct_body
+                .fields
+                .iter_mut()
+                .find(|field| get_transform_field(&field.attrs).is_some())
                 .expect("No field has the #[transform] attribute.");
 
-            field.attrs.remove(get_transform_field(&field.attrs).unwrap());
-            
-            field.ident.clone().expect("Tuple structs are not supported.")
-        },
-        _ => panic!("Only structs are supported.")
+            field
+                .attrs
+                .remove(get_transform_field(&field.attrs).unwrap());
+
+            field
+                .ident
+                .clone()
+                .expect("Tuple structs are not supported.")
+        }
+        _ => panic!("Only structs are supported."),
     };
 
     quote! {
@@ -34,7 +42,8 @@ pub fn transformable(input: TokenStream) -> TokenStream {
                 &mut self.#transform_name
             }
         }
-    }.into()
+    }
+    .into()
 }
 
 fn get_transform_field(attributes: &[Attribute]) -> Option<usize> {
